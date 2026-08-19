@@ -281,7 +281,27 @@ def graph():
 
 
 # ==================================================
-# CAREER EXPLORER
+# CAREER EXPLORER PAGE
+# ==================================================
+
+@app.route("/careers")
+def careers():
+    try:
+        return render_template(
+            "careers.html"
+        )
+
+    except Exception as e:
+        print("CAREERS PAGE ERROR:", e)
+
+        return render_template(
+            "careers.html",
+            error="Unable to load Career Explorer."
+        )
+
+
+# ==================================================
+# CAREER PATH FOR SPECIFIC ROLE
 # ==================================================
 
 @app.route("/role/<role_id>/career")
@@ -296,7 +316,8 @@ def career_path(role_id):
 
         return render_template(
             "career.html",
-            results=results
+            results=results,
+            role_id=role_id
         )
 
     except Exception as e:
@@ -305,6 +326,7 @@ def career_path(role_id):
         return render_template(
             "career.html",
             results=[],
+            role_id=role_id,
             error="Unable to connect to the graph database."
         )
 
