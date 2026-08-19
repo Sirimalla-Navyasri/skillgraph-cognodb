@@ -8,11 +8,11 @@ Built as part of the Wexa AI CognoDB Take-Home Assignment.
 
 Live Demo
 
-Hosted Application: YOUR_RENDER_DEMO_URL
+Hosted Application: https://skillgraph-cognodb-5r66.onrender.com
 
-GitHub Repository: YOUR_GITHUB_REPOSITORY_URL
+GitHub Repository: https://github.com/Sirimalla-Navyasri/skillgraph-cognodb.git
 
-Screen Recording: YOUR_SCREEN_RECORDING_URL
+Screen Recording: https://drive.google.com/file/d/1bBY307x_tJ0wEMX797bbD4URxKfZ4Fpc/view?usp=drivesdk
 
 ---
 
@@ -1073,10 +1073,10 @@ The project is intentionally designed as a small, maintainable application that 
 
 Author
 
-YOUR_NAME
+Navyasri Sirimalla
 
-GitHub: YOUR_GITHUB_PROFILE_URL
+GitHub: https://github.com/Sirimalla-Navyasri
 
-Project Repository: YOUR_GITHUB_REPOSITORY_URL
+Project Repository: https://github.com/Sirimalla-Navyasri/skillgraph-cognodb.git
 
-Live Demo: YOUR_RENDER_DEMO_URL
+Live Demo: https://skillgraph-cognodb-5r66.onrender.com
