@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}
+Candidates · SkillGraph
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <p class="eyebrow">
+            EXPLORE
+        </p>
+
+        <h1>
+            Candidates
+        </h1>
+
+    </div>
+
+</div>
+
+
+<form
+    class="search"
+    method="GET"
+    action="/candidates"
+>
+
+    <input
+        type="text"
+        name="search"
+        value="{{ search }}"
+        placeholder="Search by name or role..."
+    >
+
+    <button type="submit">
+        Search
+    </button>
+
+</form>
+
+
+{% if candidates %}
+
+<div class="grid">
+
+    {% for candidate in candidates %}
+
+    <a
+        class="card"
+        href="/candidate/{{ candidate.id }}"
+    >
+
+        <div class="avatar">
+            {{ candidate.name[0] }}
+        </div>
+
+        <h3>
+            {{ candidate.name }}
+        </h3>
+
+        <p>
+            {{ candidate.title }}
+        </p>
+
+        <p class="muted">
+            {{ candidate.location }}
+        </p>
+
+        <p class="muted">
+            {{ candidate.experience }} years experience
+        </p>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+    <h3>
+        No candidates found
+    </h3>
+
+    <p>
+        Try another search.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

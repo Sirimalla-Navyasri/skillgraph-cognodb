@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}
+SkillGraph Dashboard
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div>
+
+        <p class="eyebrow">
+            GRAPH EXPLORER
+        </p>
+
+        <h1>
+            Discover people through
+            their skills and experience.
+        </h1>
+
+        <p>
+            Explore relationships between
+            candidates, skills, projects,
+            companies and career roles.
+        </p>
+
+        <a
+            class="button"
+            href="/candidates"
+        >
+            Explore Candidates
+        </a>
+
+    </div>
+
+</section>
+
+
+<section>
+
+    <h2>
+        Featured Candidates
+    </h2>
+
+    <div class="grid">
+
+        {% for candidate in candidates[:6] %}
+
+        <a
+            class="card"
+            href="/candidate/{{ candidate.id }}"
+        >
+
+            <h3>
+                {{ candidate.name }}
+            </h3>
+
+            <p>
+                {{ candidate.title }}
+            </p>
+
+            <span>
+                {{ candidate.location }}
+            </span>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

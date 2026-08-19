@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Graph Explorer</h1>
+
+    <p>
+        Explore relationships between candidates,
+        projects and skills.
+    </p>
+
+    {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+    {% elif results %}
+
+        {% for row in results %}
+
+            <div class="candidate-card">
+
+                <h2>{{ row.candidate }}</h2>
+
+                <p>
+                    <strong>Project:</strong>
+                    {{ row.project }}
+                </p>
+
+                <p>
+                    <strong>Skill:</strong>
+                    {{ row.skill }}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No graph relationships found.</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

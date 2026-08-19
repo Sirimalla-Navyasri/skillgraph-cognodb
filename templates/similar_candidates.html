@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Similar Candidates</h1>
+
+    {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+    {% elif results %}
+
+        {% for candidate in results %}
+
+            <div class="candidate-card">
+
+                <h2>{{ candidate.name }}</h2>
+
+                <p>
+                    <strong>Title:</strong>
+                    {{ candidate.title }}
+                </p>
+
+                <p>
+                    <strong>Shared Skills:</strong>
+                    {{ candidate.shared_skills }}
+                </p>
+
+                <p>
+                    <strong>Skills:</strong>
+
+                    {% if candidate.skills %}
+                        {{ candidate.skills | join(", ") }}
+                    {% else %}
+                        No skills available
+                    {% endif %}
+
+                </p>
+
+                <a href="/candidate/{{ candidate.id }}">
+                    View Candidate
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No similar candidates found.</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

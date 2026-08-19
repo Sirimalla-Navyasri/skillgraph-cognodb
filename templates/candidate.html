@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}
+Candidate · SkillGraph
+{% endblock %}
+
+
+{% block content %}
+
+{% if candidate %}
+
+<section class="profile">
+
+    <div class="avatar large">
+        {{ candidate.name[0] }}
+    </div>
+
+    <div>
+
+        <p class="eyebrow">
+            CANDIDATE
+        </p>
+
+        <h1>
+            {{ candidate.name }}
+        </h1>
+
+        <p>
+            {{ candidate.title }}
+        </p>
+
+        <p class="muted">
+            {{ candidate.location }}
+            ·
+            {{ candidate.experience }} years experience
+        </p>
+
+        <button onclick="loadSimilarCandidates('{{ candidate.id }}')">
+            Find Similar Candidates
+        </button>
+
+        <div id="similar-results"></div>
+
+    </div>
+
+</section>
+
+
+<section>
+
+    <h2>
+        Skills
+    </h2>
+
+    <div class="tags">
+
+        {% for skill in candidate.skills %}
+
+            {% if skill %}
+
+            <span class="tag">
+                {{ skill }}
+            </span>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section>
+
+    <h2>
+        Projects
+    </h2>
+
+    <div class="list">
+
+        {% for project in candidate.projects %}
+
+        {% if project %}
+
+        <div class="list-item">
+            {{ project }}
+        </div>
+
+        {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section>
+
+    <h2>
+        Companies
+    </h2>
+
+    <div class="tags">
+
+        {% for company in candidate.companies %}
+
+            {% if company %}
+
+            <span class="tag">
+                {{ company }}
+            </span>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section>
+
+    <h2>
+        Career Roles
+    </h2>
+
+    <div class="tags">
+
+        {% for role in candidate.roles %}
+
+            {% if role %}
+
+            <span class="tag">
+                {{ role }}
+            </span>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+{% else %}
+
+<div class="empty">
+
+    <h2>
+        Candidate unavailable
+    </h2>
+
+    <p>
+        We couldn't find this candidate.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

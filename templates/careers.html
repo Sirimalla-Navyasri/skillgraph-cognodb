@@ -1,0 +1,125 @@
+<select id="role-select">
+
+    <option value="R001">
+        Data Engineer
+    </option>
+
+    <option value="R002">
+        Backend Developer
+    </option>
+
+    <option value="R003">
+        ML Engineer
+    </option>
+
+    <option value="R004">
+        Data Analyst
+    </option>
+
+    <option value="R005">
+        Full Stack Developer
+    </option>
+
+</select>
+
+<button onclick="findCareerPath()">
+    Explore Career Paths
+</button>
+
+<div id="career-results"></div>
+async function findCareerPath() {
+
+    const role =
+        document.getElementById("role-select").value;
+
+    const container =
+        document.getElementById("career-results");
+
+    container.innerHTML =
+        "<p>Exploring career connections...</p>";
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/role/${role}/career-path`
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            container.innerHTML =
+                "<p>Unable to load career paths.</p>";
+
+            return;
+        }
+
+        container.innerHTML =
+            data.results.map(role => `
+                <div class="card">
+                    <h3>${role.title}</h3>
+
+                    <p>
+                        ${role.shared_skills}
+                        shared skills
+                    </p>
+
+                    <p>
+                        ${role.shared_skills}
+                    </p>
+                </div>
+            `).join("");
+
+    } catch {
+
+        container.innerHTML =
+            "<p>Database unavailable.</p>";
+    }
+}
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Related Career Roles</h1>
+
+    {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+    {% elif results %}
+
+        {% for role in results %}
+
+            <div class="candidate-card">
+
+                <h2>{{ role.title }}</h2>
+
+                <p>
+                    <strong>Shared Skills:</strong>
+                    {{ role.shared_skills | join(", ") }}
+                </p>
+
+                <p>
+                    <strong>Skill Overlap:</strong>
+                    {{ role.overlap }}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No related roles found.</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
