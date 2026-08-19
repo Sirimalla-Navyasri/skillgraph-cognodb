@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, request, jsonify
 
 from database.connection import Database
@@ -9,17 +11,19 @@ from database.queries import (
     CANDIDATES_BY_SKILL,
     CANDIDATES_FOR_ROLE,
     SIMILAR_CANDIDATES,
-    CAREER_PATH
+    CAREER_PATH,
 )
+
 
 app = Flask(__name__)
 
+# Create database connection
 db = Database()
 
 
-# ==================================================
+# ============================================================
 # HOME / DASHBOARD
-# ==================================================
+# ============================================================
 
 @app.route("/")
 def index():
@@ -28,11 +32,12 @@ def index():
 
         return render_template(
             "index.html",
-            candidates=candidates
+            candidates=candidates,
+            error=None
         )
 
-    except Exception as e:
-        print("HOME ERROR:", e)
+    except Exception as error:
+        print("HOME ERROR:", error)
 
         return render_template(
             "index.html",
@@ -41,9 +46,9 @@ def index():
         )
 
 
-# ==================================================
+# ============================================================
 # ALL CANDIDATES
-# ==================================================
+# ============================================================
 
 @app.route("/candidates")
 def candidates():
@@ -63,11 +68,12 @@ def candidates():
         return render_template(
             "candidates.html",
             candidates=results,
-            search=search
+            search=search,
+            error=None
         )
 
-    except Exception as e:
-        print("CANDIDATES ERROR:", e)
+    except Exception as error:
+        print("CANDIDATES ERROR:", error)
 
         return render_template(
             "candidates.html",
@@ -77,9 +83,9 @@ def candidates():
         )
 
 
-# ==================================================
+# ============================================================
 # CANDIDATE DETAILS
-# ==================================================
+# ============================================================
 
 @app.route("/candidate/<candidate_id>")
 def candidate(candidate_id):
@@ -96,26 +102,27 @@ def candidate(candidate_id):
                 "candidate_detail.html",
                 candidate=None,
                 error="Candidate not found."
-            )
+            ), 404
 
         return render_template(
             "candidate_detail.html",
-            candidate=result[0]
+            candidate=result[0],
+            error=None
         )
 
-    except Exception as e:
-        print("CANDIDATE ERROR:", e)
+    except Exception as error:
+        print("CANDIDATE ERROR:", error)
 
         return render_template(
             "candidate_detail.html",
             candidate=None,
             error="Unable to load candidate."
-        )
+        ), 503
 
 
-# ==================================================
+# ============================================================
 # CANDIDATES BY SKILL API
-# ==================================================
+# ============================================================
 
 @app.route("/api/skill/<skill>")
 def skill_candidates(skill):
@@ -132,18 +139,18 @@ def skill_candidates(skill):
             "results": results
         })
 
-    except Exception as e:
-        print("SKILL ERROR:", e)
+    except Exception as error:
+        print("SKILL ERROR:", error)
 
         return jsonify({
             "success": False,
-            "message": str(e)
+            "message": "Unable to load candidates for this skill."
         }), 503
 
 
-# ==================================================
+# ============================================================
 # CANDIDATES FOR ROLE API
-# ==================================================
+# ============================================================
 
 @app.route("/api/role/<role_id>/candidates")
 def role_candidates(role_id):
@@ -160,18 +167,18 @@ def role_candidates(role_id):
             "results": results
         })
 
-    except Exception as e:
-        print("ROLE CANDIDATES ERROR:", e)
+    except Exception as error:
+        print("ROLE CANDIDATES ERROR:", error)
 
         return jsonify({
             "success": False,
-            "message": str(e)
+            "message": "Unable to load candidates for this role."
         }), 503
 
 
-# ==================================================
+# ============================================================
 # SIMILAR CANDIDATES PAGE
-# ==================================================
+# ============================================================
 
 @app.route("/candidate/<candidate_id>/similar")
 def similar_candidates_page(candidate_id):
@@ -186,23 +193,24 @@ def similar_candidates_page(candidate_id):
         return render_template(
             "similar_candidates.html",
             results=results,
-            candidate_id=candidate_id
+            candidate_id=candidate_id,
+            error=None
         )
 
-    except Exception as e:
-        print("SIMILAR CANDIDATES ERROR:", e)
+    except Exception as error:
+        print("SIMILAR CANDIDATES ERROR:", error)
 
         return render_template(
             "similar_candidates.html",
             results=[],
             candidate_id=candidate_id,
-            error=str(e)
-        )
+            error="Unable to find similar candidates."
+        ), 503
 
 
-# ==================================================
+# ============================================================
 # SIMILAR CANDIDATES API
-# ==================================================
+# ============================================================
 
 @app.route("/api/candidate/<candidate_id>/similar")
 def similar_candidates_api(candidate_id):
@@ -219,18 +227,55 @@ def similar_candidates_api(candidate_id):
             "results": results
         })
 
-    except Exception as e:
-        print("SIMILAR CANDIDATES API ERROR:", e)
+    except Exception as error:
+        print("SIMILAR CANDIDATES API ERROR:", error)
 
         return jsonify({
             "success": False,
-            "message": str(e)
+            "message": "Unable to find similar candidates."
         }), 503
 
 
-# ==================================================
+# ============================================================
+# GRAPH EXPLORER
+# ============================================================
+
+@app.route("/graph")
+def graph():
+    try:
+        results = db.query(MULTI_HOP_TRAVERSAL)
+
+        return render_template(
+            "graph.html",
+            results=results,
+            error=None
+        )
+
+    except Exception as error:
+        print("GRAPH ERROR:", error)
+
+        return render_template(
+            "graph.html",
+            results=[],
+            error="Unable to load graph relationships."
+        ), 503
+
+
+# ============================================================
+# CAREER EXPLORER PAGE
+# ============================================================
+
+@app.route("/careers")
+def careers():
+    return render_template(
+        "careers.html",
+        error=None
+    )
+
+
+# ============================================================
 # CAREER PATH API
-# ==================================================
+# ============================================================
 
 @app.route("/api/role/<role_id>/career-path")
 def api_career_path(role_id):
@@ -247,124 +292,78 @@ def api_career_path(role_id):
             "results": results
         })
 
-    except Exception as e:
-        print("CAREER PATH API ERROR:", e)
+    except Exception as error:
+        print("CAREER PATH API ERROR:", error)
 
         return jsonify({
             "success": False,
-            "message": str(e)
+            "message": "Unable to load career paths."
         }), 503
 
 
-# ==================================================
-# GRAPH EXPLORER
-# ==================================================
-
-@app.route("/graph")
-def graph():
-    try:
-        results = db.query(MULTI_HOP_TRAVERSAL)
-
-        return render_template(
-            "graph.html",
-            results=results
-        )
-
-    except Exception as e:
-        print("GRAPH ERROR:", e)
-
-        return render_template(
-            "graph.html",
-            results=[],
-            error="Unable to connect to the graph database."
-        )
-
-
-# ==================================================
-# CAREER EXPLORER PAGE
-# ==================================================
-
-@app.route("/careers")
-def careers():
-    try:
-        return render_template(
-            "careers.html"
-        )
-
-    except Exception as e:
-        print("CAREERS PAGE ERROR:", e)
-
-        return render_template(
-            "careers.html",
-            error="Unable to load Career Explorer."
-        )
-
-
-# ==================================================
-# CAREER PATH FOR SPECIFIC ROLE
-# ==================================================
-
-@app.route("/role/<role_id>/career")
-def career_path(role_id):
-    try:
-        results = db.query(
-            CAREER_PATH,
-            {
-                "role_id": role_id
-            }
-        )
-
-        return render_template(
-            "career.html",
-            results=results,
-            role_id=role_id
-        )
-
-    except Exception as e:
-        print("CAREER PAGE ERROR:", e)
-
-        return render_template(
-            "career.html",
-            results=[],
-            role_id=role_id,
-            error="Unable to connect to the graph database."
-        )
-
-
-# ==================================================
+# ============================================================
 # HEALTH CHECK
-# ==================================================
+# ============================================================
 
 @app.route("/health")
 def health():
-
     try:
         db.verify()
 
         return jsonify({
             "status": "healthy",
             "database": "connected"
-        })
+        }), 200
 
-    except Exception as e:
-
-        print("HEALTH ERROR:", e)
+    except Exception as error:
+        print("HEALTH ERROR:", error)
 
         return jsonify({
             "status": "unhealthy",
-            "database": "unavailable",
-            "error": str(e)
+            "database": "unavailable"
         }), 503
 
 
-# ==================================================
-# START APPLICATION
-# ==================================================
+# ============================================================
+# 404 HANDLER
+# ============================================================
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template(
+        "index.html",
+        candidates=[],
+        error="The requested page was not found."
+    ), 404
+
+
+# ============================================================
+# 500 HANDLER
+# ============================================================
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    print("INTERNAL SERVER ERROR:", error)
+
+    return render_template(
+        "index.html",
+        candidates=[],
+        error="Something went wrong. Please try again."
+    ), 500
+
+
+# ============================================================
+# APPLICATION START
+# ============================================================
 
 if __name__ == "__main__":
 
+    port = int(
+        os.environ.get("PORT", 5000)
+    )
+
     app.run(
         host="0.0.0.0",
-        port=5000,
-        debug=True
+        port=port,
+        debug=False
     )
